@@ -69,7 +69,3 @@ Flask-Session==0.5.0
 requests==2.31.0
 beautifulsoup4==4.12.2
 ```
-
-## License
-
-This project is licensed under the MIT License. See `LICENSE` for details.
