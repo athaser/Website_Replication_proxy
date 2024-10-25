@@ -1,0 +1,12 @@
+# docker-compose.yml
+version: "3.3"
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    restart: always
+    shm_size: '1gb'  # Increase shared memory to avoid Chrome crashes in Docker
+  redis:
+    image: "redis:alpine"
+    restart: always
