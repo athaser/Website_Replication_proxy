@@ -6,8 +6,11 @@ from urllib.parse import urlparse, urljoin, quote, unquote
 app = Flask(__name__)
 
 def rewrite_links(content, base_url):
-    # Parse the HTML content using BeautifulSoup
-    soup = BeautifulSoup(content, 'html.parser')
+    # Parse the entire content with lxml to ensure proper structure
+    soup = BeautifulSoup(content, 'lxml')
+
+    # Convert to html.parser for further modifications
+    soup = BeautifulSoup(str(soup), 'html.parser')
 
     # Rewrite all relevant resource links to maintain the proxy behavior
     for tag, attribute in [('a', 'href'), ('link', 'href'), ('script', 'src'), ('img', 'src')]:
@@ -21,24 +24,27 @@ def rewrite_links(content, base_url):
                     resource.attrs[attribute] = f'/proxy?url={quote(full_url)}&base_url={quote(base_url)}'
 
     # Add JavaScript code to handle link clicks and maintain the proxy behavior
-    script = f'''
+    script = '''
     <script>
-    document.addEventListener('DOMContentLoaded', function() {{
+    document.addEventListener('DOMContentLoaded', function() {
         var links = document.querySelectorAll('a[href^="/proxy?url="]');
-        links.forEach(function(link) {{
-            link.addEventListener('click', function(event) {{
+        links.forEach(function(link) {
+            link.addEventListener('click', function(event) {
                 event.preventDefault();
                 var url = decodeURIComponent(this.getAttribute('href').split('url=')[1].split('&')[0]);
                 var base_url = decodeURIComponent(this.getAttribute('href').split('base_url=')[1]);
                 window.location.href = '/proxy?url=' + encodeURIComponent(url) + '&base_url=' + encodeURIComponent(base_url);
-            }});
-        }});
-    }});
+            });
+        });
+    });
     </script>
     '''
     soup.head.append(BeautifulSoup(script, 'html.parser'))
 
     return str(soup)
+
+
+
 
 @app.route('/')
 def index():
