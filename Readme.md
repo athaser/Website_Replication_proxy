@@ -22,7 +22,7 @@ A Dockerized Flask app that serves as a proxy server, dynamically fetching and m
    Clone the repository and navigate to the project directory:
    ```bash
    git clone https://github.com/athaser/Website_Replication_proxy
-   cd your-repo-name
+   cd Website_Replication_proxy
    ```
 
 2. **Build the Docker Containers**:
